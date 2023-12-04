@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Define command-line arguments
+
+NS=kube-system
+
+# Retrieve resource usage statistics from Kubernetes
+
+kubectl get pod -n $NS | tail -n +2 | while read line
+do
+  # Extract CPU and memory usage from the output
+  RES=$(echo $line | awk -F'-' '{print $1}')
+  NAME=$(echo $line | awk  '{print $1}')
+  STATS=$(kubectl top pod $NAME | tail -n +2)
+  CPU=$(echo $STATS | awk '{print $2}')
+  MEMORY=$(echo $STATS | awk '{print $3}')
+
+  echo Resource:$RES  Namespace:$NS  Name:$NAME  CPU:$CPU  MEM:$MEMORY
+
+  # Output the statistics to the console
+  # "Resource, Namespace, Name, CPU, Memory"
+done
